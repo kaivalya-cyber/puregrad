@@ -15,9 +15,9 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from antigravity import Tensor, MLP, MSELoss, SGD
-from antigravity.data import make_moons
-from antigravity.utils import draw_graph
+from puregrad import Tensor, MLP, MSELoss, SGD
+from puregrad.data import make_moons
+from puregrad.utils import draw_graph
 
 
 def main():

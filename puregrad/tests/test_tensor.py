@@ -14,8 +14,8 @@ import sys
 import numpy as np
 
 sys.path.insert(0, ".")
-from antigravity.tensor import Tensor
-from antigravity.utils import gradient_check
+from puregrad.tensor import Tensor
+from puregrad.utils import gradient_check
 
 
 def test_scalar_autograd():

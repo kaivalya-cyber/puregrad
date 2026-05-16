@@ -13,9 +13,9 @@ import sys
 import numpy as np
 
 sys.path.insert(0, ".")
-from antigravity.tensor import Tensor
-from antigravity.layers import Linear, ReLU, Tanh
-from antigravity.nn import MLP
+from puregrad.tensor import Tensor
+from puregrad.layers import Linear, ReLU, Tanh
+from puregrad.nn import MLP
 
 
 def test_linear_forward_shape():

@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">⚛️ Antigravity</h1>
+  <h1 align="center">⚛️ PureGrad</h1>
   <p align="center">
     <strong>A Deep Learning Framework Built From Scratch</strong>
   </p>
@@ -20,13 +20,13 @@
 
 ## What is Antigravity?
 
-**Antigravity** is a lightweight, educational deep learning framework implemented entirely from scratch in pure Python + NumPy. No PyTorch. No TensorFlow. No Autograd libraries. Every piece of the engine — from the computation graph to backpropagation to gradient descent — is built from first principles.
+**PureGrad** is a lightweight, educational deep learning framework implemented entirely from scratch in pure Python + NumPy. No PyTorch. No TensorFlow. No Autograd libraries. Every piece of the engine — from the computation graph to backpropagation to gradient descent — is built from first principles.
 
 It can train real neural networks on non-linear datasets and achieve convergence.
 
 ```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃       ANTIGRAVITY — Custom Deep Learning Framework      ┃
+┃        PUREGRAD — Custom Deep Learning Framework        ┃
 ┃           Zero Dependencies · Pure Autograd             ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
@@ -53,8 +53,8 @@ It can train real neural networks on non-linear datasets and achieve convergence
 ### Installation
 
 ```bash
-git clone https://github.com/kaivalya-cyber/antigravity.git
-cd antigravity
+git clone https://github.com/kaivalya-cyber/puregrad.git
+cd puregrad
 
 # Create a virtual environment
 python3 -m venv .venv
@@ -68,8 +68,8 @@ python train.py
 ### Minimal Example
 
 ```python
-from antigravity import Tensor, MLP, MSELoss, SGD
-from antigravity.data import make_moons
+from puregrad import Tensor, MLP, MSELoss, SGD
+from puregrad.data import make_moons
 
 # Generate dataset
 X_np, y_np = make_moons(n_samples=300, noise=0.1)
@@ -128,7 +128,7 @@ print(f"Final loss: {loss.data.flat[0]:.4f}")
 ## Architecture
 
 ```
-antigravity/
+puregrad/
 ├── tensor.py       Core Tensor class + autograd engine
 ├── layers.py       Module │ Linear │ ReLU │ Tanh │ Sigmoid
 ├── nn.py           MLP composite model
@@ -206,7 +206,7 @@ optimizer.zero_grad()  # Reset gradients
 ### Diagnostics
 
 ```python
-from antigravity.utils import draw_graph, gradient_check
+from puregrad.utils import draw_graph, gradient_check
 
 draw_graph(loss)                               # Print computation graph
 gradient_check(f, [a, b], eps=1e-5, tol=1e-4)  # Numerical verification
@@ -220,13 +220,13 @@ Run the full test suite:
 
 ```bash
 # Phase 1 & 2: Tensor engine (scalar autograd, broadcasting, matmul, activations)
-python -m antigravity.tests.test_tensor
+python -m puregrad.tests.test_tensor
 
 # Phase 3: Layers & MLP (shapes, gradient flow, zero_grad)
-python -m antigravity.tests.test_layers
+python -m puregrad.tests.test_layers
 
 # Phase 4: Training pipeline (MSE loss, SGD step, convergence)
-python -m antigravity.tests.test_training
+python -m puregrad.tests.test_training
 ```
 
 ### Test Results
@@ -250,7 +250,7 @@ Key verifications:
 
 > **"If you wish to make an apple pie from scratch, you must first invent the universe."** — Carl Sagan
 
-Antigravity exists to make the invisible machinery of deep learning visible. Every gradient, every graph edge, every backward closure is hand-written and inspectable. No black boxes.
+PureGrad exists to make the invisible machinery of deep learning visible. Every gradient, every graph edge, every backward closure is hand-written and inspectable. No black boxes.
 
 **Constraints by design:**
 - 🚫 No PyTorch, TensorFlow, JAX, or autograd libraries

@@ -6,7 +6,7 @@ suitable for calling .backward() on.
 """
 
 import numpy as np
-from antigravity.tensor import Tensor
+from puregrad.tensor import Tensor
 
 
 def MSELoss(predictions, targets):

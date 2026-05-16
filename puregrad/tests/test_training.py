@@ -4,11 +4,11 @@ Phase 4 Verification — End-to-End Training Test.
 import sys
 import numpy as np
 sys.path.insert(0, ".")
-from antigravity.tensor import Tensor
-from antigravity.nn import MLP
-from antigravity.loss import MSELoss
-from antigravity.optim import SGD
-from antigravity.data import make_moons
+from puregrad.tensor import Tensor
+from puregrad.nn import MLP
+from puregrad.loss import MSELoss
+from puregrad.optim import SGD
+from puregrad.data import make_moons
 
 
 def test_mse_loss():

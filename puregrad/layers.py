@@ -9,7 +9,7 @@ Class hierarchy:
 """
 
 import numpy as np
-from antigravity.tensor import Tensor
+from puregrad.tensor import Tensor
 
 
 class Module:

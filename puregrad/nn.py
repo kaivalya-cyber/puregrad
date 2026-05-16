@@ -4,7 +4,7 @@ Composite neural network architectures.
 MLP — Multi-Layer Perceptron with configurable hidden dims and activation.
 """
 
-from antigravity.layers import Module, Linear, ReLU, Tanh
+from puregrad.layers import Module, Linear, ReLU, Tanh
 
 
 class MLP(Module):

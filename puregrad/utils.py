@@ -6,7 +6,7 @@ Diagnostic and visualization utilities.
 """
 
 import numpy as np
-from antigravity.tensor import Tensor
+from puregrad.tensor import Tensor
 
 
 def draw_graph(tensor, indent=0, visited=None):

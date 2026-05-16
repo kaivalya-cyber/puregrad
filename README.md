@@ -233,10 +233,10 @@ python -m puregrad.tests.test_training
 
 | Suite | Tests | Status |
 |:---|:---:|:---:|
-| Tensor Engine | 9/9 | ✅ All passed |
-| Layers & MLP | 7/7 | ✅ All passed |
-| Training | 3/3 | ✅ All passed |
-| **Total** | **19/19** | ✅ |
+| Tensor Engine | 9/9 |  Passed |
+| Layers & MLP | 7/7 |  Passed |
+| Training | 3/3 |  Passed |
+| **Total** | **19/19** | All Passed |
 
 Key verifications:
 - Scalar autograd: `f(a,b) = a*b + b²` matches hand-calculated derivatives
@@ -253,9 +253,9 @@ Key verifications:
 PureGrad exists to make the invisible machinery of deep learning visible. Every gradient, every graph edge, every backward closure is hand-written and inspectable. No black boxes.
 
 **Constraints by design:**
-- 🚫 No PyTorch, TensorFlow, JAX, or autograd libraries
-- ✅ NumPy permitted only for raw array storage and element-wise math
-- ✅ All calculus, graph logic, and backpropagation is proprietary
+-  No PyTorch, TensorFlow, JAX, or autograd libraries
+-  NumPy permitted only for raw array storage and element-wise math
+-  All calculus, graph logic, and backpropagation is proprietary
 
 ---
 

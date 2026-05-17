@@ -18,7 +18,7 @@
 
 ---
 
-## What is Antigravity?
+## What is Puregrad?
 
 **PureGrad** is a lightweight, educational deep learning framework implemented entirely from scratch in pure Python + NumPy. No PyTorch. No TensorFlow. No Autograd libraries. Every piece of the engine — from the computation graph to backpropagation to gradient descent — is built from first principles.
 

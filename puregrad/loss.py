@@ -52,3 +52,50 @@ def CrossEntropyLoss(logits, targets):
     # Numerically stable BCE via log with epsilon protection
     loss = targets * probs.log() + (1.0 - targets) * (1.0 - probs).log()
     return (loss * (-1.0)).mean()
+
+
+def SoftmaxCrossEntropyLoss(logits, targets):
+    """
+    Multi-class Cross-Entropy loss with built-in softmax.
+
+    L = -(1/N) * Σ log(softmax(logits)[i, target_i])
+
+    Parameters
+    ----------
+    logits : Tensor  — raw logits, shape (N, C)
+    targets : Tensor or np.ndarray — integer class labels, shape (N,) or (N, 1)
+
+    Returns
+    -------
+    Tensor — scalar loss value.
+
+    Example
+    -------
+    >>> logits = Tensor(np.random.randn(32, 10))  # 32 samples, 10 classes
+    >>> targets = np.array([3, 7, 1, ...])          # ground-truth class indices
+    >>> loss = SoftmaxCrossEntropyLoss(logits, targets)
+    """
+    if isinstance(targets, Tensor):
+        targets = targets.data
+    targets = np.asarray(targets, dtype=np.int64).flatten()
+
+    N = logits.data.shape[0]
+    probs = logits.softmax(axis=1)
+
+    # Gather probabilities for the correct classes: probs[i, targets[i]]
+    # Use advanced indexing; we wrap result in a Tensor for autograd
+    correct_probs = Tensor(probs.data[np.arange(N), targets].reshape(-1, 1),
+                           (probs,), "nll")
+
+    def _backward():
+        # Gradient of NLL w.r.t softmax probs:
+        # d(-log(probs[correct]))/dprobs[i,j] = -delta[targets[i],j] / probs[i,j]
+        nll_grad = np.zeros_like(probs.data)
+        nll_grad[np.arange(N), targets] = -1.0 / correct_probs.data.flatten()
+        probs.grad += nll_grad * correct_probs.grad
+
+    correct_probs._backward = _backward
+
+    # Negative log-likelihood
+    nll = -correct_probs.log()
+    return nll.mean()

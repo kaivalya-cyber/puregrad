@@ -230,6 +230,32 @@ class Tensor:
         out._backward = _backward
         return out
 
+    def softmax(self, axis=-1):
+        """
+        Numerically stable softmax along given axis.
+
+        softmax(x_i) = exp(x_i - max(x)) / sum_j(exp(x_j - max(x)))
+
+        Gradient: d(softmax)/dx_j = y_j * (delta_ij - y_i)
+        => dL/dx = y * (dL/dy - sum(dL/dy * y, axis, keepdims=True))
+        """
+        # Numerically stable: subtract max before exp
+        shifted = self.data - self.data.max(axis=axis, keepdims=True)
+        exp_vals = np.exp(shifted)
+        sum_exp = exp_vals.sum(axis=axis, keepdims=True)
+        y = exp_vals / sum_exp
+
+        out = Tensor(y, (self,), "softmax")
+
+        def _backward():
+            # y * (dy - sum(dy * y, axis, keepdims))
+            dy = out.grad
+            dot = (dy * y).sum(axis=axis, keepdims=True)
+            self.grad += y * (dy - dot)
+
+        out._backward = _backward
+        return out
+
     # ------------------------------------------------------------------
     # Backward pass — reverse-mode automatic differentiation
     # ------------------------------------------------------------------

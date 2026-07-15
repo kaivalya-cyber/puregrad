@@ -219,3 +219,32 @@ class Dropout(Module):
 
         out._backward = _backward
         return out
+
+
+class LeakyReLU(Module):
+    """
+    Leaky ReLU activation: f(x) = x if x > 0, else alpha * x.
+
+    Parameters
+    ----------
+    alpha : float
+        Slope for negative inputs (default 0.01).
+    """
+
+    def __init__(self, alpha=0.01):
+        super().__init__()
+        self.alpha = alpha
+
+    def forward(self, x):
+        return x.leaky_relu(self.alpha)
+
+
+class GELU(Module):
+    """
+    Gaussian Error Linear Unit (GELU) activation.
+
+    Uses the tanh approximation: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3))).
+    """
+
+    def forward(self, x):
+        return x.gelu()

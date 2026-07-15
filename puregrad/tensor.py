@@ -245,6 +245,46 @@ class Tensor:
         out._backward = _backward
         return out
 
+    def leaky_relu(self, alpha=0.01):
+        """
+        Leaky ReLU: f(x) = x if x > 0, else alpha * x.
+        Gradient: f'(x) = 1 if x > 0, else alpha.
+        """
+        out_data = np.where(self.data > 0, self.data, alpha * self.data)
+        out = Tensor(out_data, (self,), "leaky_relu")
+
+        def _backward():
+            grad = np.where(self.data > 0, 1.0, alpha).astype(np.float64)
+            self.grad += grad * out.grad
+
+        out._backward = _backward
+        return out
+
+    def gelu(self):
+        """
+        Gaussian Error Linear Unit (GELU) activation.
+
+        Approximated as:
+            gelu(x) = 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+
+        This is the tanh approximation used in BERT/GPT.
+        """
+        x = self.data
+        inner = np.sqrt(2.0 / np.pi) * (x + 0.044715 * x ** 3)
+        tanh_inner = np.tanh(inner)
+        out_data = 0.5 * x * (1.0 + tanh_inner)
+        out = Tensor(out_data, (self,), "gelu")
+
+        def _backward():
+            # Derivative of GELU tanh approximation
+            sech2 = 1.0 - tanh_inner ** 2
+            d_inner = np.sqrt(2.0 / np.pi) * (1.0 + 3.0 * 0.044715 * x ** 2)
+            dgelu = 0.5 * (1.0 + tanh_inner) + 0.5 * x * sech2 * d_inner
+            self.grad += dgelu * out.grad
+
+        out._backward = _backward
+        return out
+
     def softmax(self, axis=-1):
         """
         Numerically stable softmax along given axis.

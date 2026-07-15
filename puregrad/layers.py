@@ -7,7 +7,10 @@ Class hierarchy:
     ├── ReLU        — element-wise max(0, x)
     ├── Tanh        — element-wise tanh(x)
     ├── Sigmoid     — element-wise sigmoid(x)
-    └── Dropout     — randomly zeroes elements during training
+    ├── Dropout     — randomly zeroes elements during training
+    ├── LeakyReLU   — leaky rectified linear unit
+    ├── GELU        — Gaussian Error Linear Unit
+    └── BatchNorm1d — 1D batch normalization
 """
 
 import numpy as np
@@ -42,6 +45,10 @@ class Module:
         for attr in vars(self).values():
             if isinstance(attr, Module):
                 attr.train()
+            elif isinstance(attr, (list, tuple)):
+                for item in attr:
+                    if isinstance(item, Module):
+                        item.train()
         return self
 
     def eval(self):
@@ -50,6 +57,10 @@ class Module:
         for attr in vars(self).values():
             if isinstance(attr, Module):
                 attr.eval()
+            elif isinstance(attr, (list, tuple)):
+                for item in attr:
+                    if isinstance(item, Module):
+                        item.eval()
         return self
 
     def state_dict(self):

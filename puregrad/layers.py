@@ -52,6 +52,57 @@ class Module:
                 attr.eval()
         return self
 
+    def state_dict(self):
+        """
+        Return all parameter data as a flat dictionary.
+
+        Returns
+        -------
+        dict[str, np.ndarray] — parameter name → numpy array.
+        """
+        state = {}
+        for i, p in enumerate(self.parameters()):
+            state[f"param_{i}"] = p.data.copy()
+        return state
+
+    def load_state_dict(self, state_dict):
+        """
+        Load parameter data from a dictionary.
+
+        Parameters
+        ----------
+        state_dict : dict[str, np.ndarray]
+            Dictionary mapping parameter names to numpy arrays.
+        """
+        for i, p in enumerate(self.parameters()):
+            key = f"param_{i}"
+            if key in state_dict:
+                p.data = state_dict[key].copy()
+
+    def save(self, filepath):
+        """
+        Save model parameters to a .npz file.
+
+        Parameters
+        ----------
+        filepath : str
+            Path to save the model (e.g. 'model.npz').
+        """
+        state = self.state_dict()
+        np.savez(filepath, **state)
+
+    def load(self, filepath):
+        """
+        Load model parameters from a .npz file.
+
+        Parameters
+        ----------
+        filepath : str
+            Path to the saved model (e.g. 'model.npz').
+        """
+        state = dict(np.load(filepath))
+        self.load_state_dict(state)
+
     def __call__(self, x):
         return self.forward(x)
 

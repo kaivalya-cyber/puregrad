@@ -179,6 +179,21 @@ class Tensor:
         out._backward = _backward
         return out
 
+    def __getitem__(self, index):
+        """
+        Index/slice into tensor with gradient tracking.
+        Supports integer indexing, slice objects, and tuples of them.
+        Gradients are routed back to the original positions.
+        """
+        out = Tensor(self.data[index], (self,), "index")
+
+        def _backward():
+            # Scatter gradients back to original positions
+            np.add.at(self.grad, index, out.grad)
+
+        out._backward = _backward
+        return out
+
     # ------------------------------------------------------------------
     # Activation-level ops (kept here for atomic graph construction)
     # ------------------------------------------------------------------

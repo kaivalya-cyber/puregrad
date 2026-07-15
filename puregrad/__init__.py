@@ -10,7 +10,7 @@ from puregrad.layers import Module, Linear, ReLU, Tanh, Sigmoid, Dropout
 from puregrad.nn import MLP
 from puregrad.loss import MSELoss, CrossEntropyLoss, SoftmaxCrossEntropyLoss
 from puregrad.optim import SGD, Adam
-from puregrad.data import make_moons, make_circles
+from puregrad.data import make_moons, make_circles, DataLoader, train_test_split
 from puregrad.utils import draw_graph, gradient_check
 
 __version__ = "1.0.0"
@@ -20,6 +20,6 @@ __all__ = [
     "MLP",
     "MSELoss", "CrossEntropyLoss", "SoftmaxCrossEntropyLoss",
     "SGD", "Adam",
-    "make_moons", "make_circles",
+    "make_moons", "make_circles", "DataLoader", "train_test_split",
     "draw_graph", "gradient_check",
 ]

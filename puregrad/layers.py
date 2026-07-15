@@ -248,3 +248,99 @@ class GELU(Module):
 
     def forward(self, x):
         return x.gelu()
+
+
+class BatchNorm1d(Module):
+    """
+    1D Batch Normalization for 2D inputs of shape (N, D).
+
+    Normalizes across the batch dimension (axis=0) for each feature.
+    Uses running mean/variance for evaluation mode.
+
+    Parameters
+    ----------
+    num_features : int
+        Number of features (D) in the input.
+    eps : float
+        Small constant for numerical stability (default 1e-5).
+    momentum : float
+        Momentum for running mean/variance updates (default 0.1).
+
+    Forward (training):
+        x_hat = (x - mu) / sqrt(var + eps)
+        y = gamma * x_hat + beta
+        Updates running stats.
+
+    Forward (eval):
+        Uses running mean/variance instead of batch statistics.
+    """
+
+    def __init__(self, num_features, eps=1e-5, momentum=0.1):
+        super().__init__()
+        self.eps = eps
+        self.momentum = momentum
+
+        # Learnable parameters
+        self.gamma = Tensor(np.ones(num_features, dtype=np.float64))
+        self.beta = Tensor(np.zeros(num_features, dtype=np.float64))
+
+        # Running statistics (not tensors — just numpy arrays)
+        self.running_mean = np.zeros(num_features, dtype=np.float64)
+        self.running_var = np.ones(num_features, dtype=np.float64)
+
+    def forward(self, x):
+        x_data = x.data
+        N = x_data.shape[0]
+
+        if self._training:
+            # Batch statistics
+            mu = np.mean(x_data, axis=0)
+            x_mu = x_data - mu
+            var = np.mean(x_mu ** 2, axis=0)
+
+            # Update running statistics
+            self.running_mean = (1.0 - self.momentum) * self.running_mean + self.momentum * mu
+            self.running_var = (1.0 - self.momentum) * self.running_var + self.momentum * var
+        else:
+            mu = self.running_mean
+            x_mu = x_data - mu
+            var = self.running_var
+
+        std_inv = 1.0 / np.sqrt(var + self.eps)
+        x_hat = x_mu * std_inv
+
+        # Scale and shift
+        y_data = self.gamma.data * x_hat + self.beta.data
+
+        # Wire the DAG
+        out = Tensor(y_data, (x, self.gamma, self.beta), "batchnorm1d")
+
+        # Save intermediates for backward (capture by value)
+        _x_mu = x_mu
+        _std_inv = std_inv
+        _x_hat = x_hat
+        _N = N
+
+        def _backward():
+            dy = out.grad
+
+            # Gradients w.r.t learnable parameters
+            d_beta = np.sum(dy, axis=0)
+            d_gamma = np.sum(dy * _x_hat, axis=0)
+
+            # Gradients w.r.t input
+            d_x_hat = dy * self.gamma.data
+            d_var = np.sum(d_x_hat * _x_mu * -0.5 * (_std_inv ** 3), axis=0)
+            d_mu = np.sum(d_x_hat * -_std_inv, axis=0)
+            d_x = (d_x_hat * _std_inv) + (d_var * 2.0 * _x_mu / _N) + (d_mu / _N)
+
+            # Accumulate gradients
+            self.beta.grad += d_beta
+            self.gamma.grad += d_gamma
+            x.grad += d_x
+
+        out._backward = _backward
+        return out
+
+    def parameters(self):
+        return [self.gamma, self.beta]

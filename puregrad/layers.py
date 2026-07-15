@@ -2,10 +2,12 @@
 Structural layer modules for building neural networks.
 
 Class hierarchy:
-    Module          — base class with zero_grad() and parameters()
+    Module          — base class with zero_grad(), parameters(), train/eval mode
     ├── Linear      — fully-connected layer: Y = X @ W + B
     ├── ReLU        — element-wise max(0, x)
-    └── Tanh        — element-wise tanh(x)
+    ├── Tanh        — element-wise tanh(x)
+    ├── Sigmoid     — element-wise sigmoid(x)
+    └── Dropout     — randomly zeroes elements during training
 """
 
 import numpy as np
@@ -19,6 +21,9 @@ class Module:
     Subclasses must override ``forward()`` and ``parameters()``.
     """
 
+    def __init__(self):
+        self._training = True
+
     def forward(self, x):
         raise NotImplementedError
 
@@ -30,6 +35,22 @@ class Module:
         """Reset gradients of all parameters to zero."""
         for p in self.parameters():
             p.grad = np.zeros_like(p.data)
+
+    def train(self):
+        """Set the module and all submodules to training mode."""
+        self._training = True
+        for attr in vars(self).values():
+            if isinstance(attr, Module):
+                attr.train()
+        return self
+
+    def eval(self):
+        """Set the module and all submodules to evaluation mode."""
+        self._training = False
+        for attr in vars(self).values():
+            if isinstance(attr, Module):
+                attr.eval()
+        return self
 
     def __call__(self, x):
         return self.forward(x)
@@ -56,6 +77,7 @@ class Linear(Module):
     """
 
     def __init__(self, in_features, out_features, bias=True):
+        super().__init__()
         # He initialization for weights
         scale = np.sqrt(2.0 / in_features)
         self.weight = Tensor(
@@ -102,3 +124,47 @@ class Sigmoid(Module):
 
     def forward(self, x):
         return x.sigmoid()
+
+
+class Dropout(Module):
+    """
+    Dropout regularization layer.
+
+    During training, randomly zeroes each element with probability `p`
+    and scales survivors by 1/(1-p). During evaluation, this is a no-op.
+
+    Parameters
+    ----------
+    p : float
+        Probability of dropping a neuron (default 0.5).
+
+    Usage
+    -----
+    >>> dropout = Dropout(p=0.2)
+    >>> model.eval()  # turns off dropout
+    >>> model.train()  # turns on dropout
+    """
+
+    def __init__(self, p=0.5):
+        super().__init__()
+        self.p = p
+        self._mask = None
+
+    def forward(self, x):
+        if not self._training or self.p == 0.0:
+            return x
+
+        # Generate mask: Bernoulli with probability (1-p)
+        mask = (np.random.rand(*x.shape) > self.p).astype(np.float64)
+        scale = 1.0 / (1.0 - self.p)
+        self._mask = mask
+
+        # Create output tensor: scaled masked values
+        out = Tensor(x.data * mask * scale, (x,), "dropout")
+
+        def _backward():
+            # Gradient only flows through non-dropped elements
+            x.grad += mask * scale * out.grad
+
+        out._backward = _backward
+        return out

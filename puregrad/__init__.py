@@ -9,7 +9,7 @@ from puregrad.tensor import Tensor
 from puregrad.layers import Module, Linear, ReLU, Tanh
 from puregrad.nn import MLP
 from puregrad.loss import MSELoss, CrossEntropyLoss
-from puregrad.optim import SGD
+from puregrad.optim import SGD, Adam
 from puregrad.data import make_moons, make_circles
 from puregrad.utils import draw_graph, gradient_check
 
@@ -19,7 +19,7 @@ __all__ = [
     "Module", "Linear", "ReLU", "Tanh",
     "MLP",
     "MSELoss", "CrossEntropyLoss",
-    "SGD",
+    "SGD", "Adam",
     "make_moons", "make_circles",
     "draw_graph", "gradient_check",
 ]

@@ -1,10 +1,46 @@
 """
 Composite neural network architectures.
 
-MLP — Multi-Layer Perceptron with configurable hidden dims and activation.
+Sequential — Chain layers/modules in order.
+MLP        — Multi-Layer Perceptron with configurable hidden dims and activation.
 """
 
 from puregrad.layers import Module, Linear, ReLU, Tanh
+
+
+class Sequential(Module):
+    """
+    A sequential container that chains modules together.
+
+    Parameters
+    ----------
+    *layers : Module
+        Variable number of layer/module instances.
+
+    Usage
+    -----
+    >>> model = Sequential(
+    ...     Linear(2, 16),
+    ...     ReLU(),
+    ...     Linear(16, 1),
+    ... )
+    >>> y = model(x)
+    """
+
+    def __init__(self, *layers):
+        super().__init__()
+        self.layers = list(layers)
+
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
+    def parameters(self):
+        params = []
+        for layer in self.layers:
+            params.extend(layer.parameters())
+        return params
 
 
 class MLP(Module):

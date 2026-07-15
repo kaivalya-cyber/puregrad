@@ -7,7 +7,7 @@ Dynamic computation graph with automatic differentiation.
 
 from puregrad.tensor import Tensor
 from puregrad.layers import Module, Linear, ReLU, Tanh, Sigmoid, Dropout
-from puregrad.nn import MLP
+from puregrad.nn import MLP, Sequential
 from puregrad.loss import MSELoss, CrossEntropyLoss, SoftmaxCrossEntropyLoss
 from puregrad.optim import SGD, Adam
 from puregrad.data import make_moons, make_circles, DataLoader, train_test_split
@@ -17,7 +17,7 @@ __version__ = "1.0.0"
 __all__ = [
     "Tensor",
     "Module", "Linear", "ReLU", "Tanh", "Sigmoid", "Dropout",
-    "MLP",
+    "MLP", "Sequential",
     "MSELoss", "CrossEntropyLoss", "SoftmaxCrossEntropyLoss",
     "SGD", "Adam",
     "make_moons", "make_circles", "DataLoader", "train_test_split",
